@@ -1,6 +1,7 @@
-# plailist
+# Description
 
-This template should help get you started developing with Vue 3 in Vite.
+This is the AI-powered (using GPT-3.5) music playlist generator. 
+Initially I wanted to implement it using multiple APIs of different music services, but it turned out that only Spotify has a working (for the needs of this project) and free API for the services that are more or less popular. Anyways I tried to make this project scalable in case other options will become available.
 
 ## Recommended IDE Setup
 
