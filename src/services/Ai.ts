@@ -49,7 +49,6 @@ class Ai {
       if (!choices.length) return []
 
       songsJson = JSON.parse(choices[0].message.content)
-
       return songsJson
     } catch (err) {
       console.error('Error parsing OpenAI response: ', err)

@@ -1,5 +1,3 @@
-import Spotify from './Spotify'
-
 class SpotifyAuth {
   static clientId: string = import.meta.env.VITE_SPOTIFY_CLIENT_ID
   static redirectUrl: string = import.meta.env.VITE_SPOTIFY_CALLBACK_URL
@@ -8,7 +6,7 @@ class SpotifyAuth {
   static scope: string = 'playlist-modify-public playlist-modify-private'
   static currentToken: object | null = null
 
-  static async init() {
+  static async init(): string | null {
     this.currentToken = {
       access_token: localStorage.getItem('access_token') || null,
       refresh_token: localStorage.getItem('refresh_token') || null,
@@ -102,12 +100,12 @@ class SpotifyAuth {
 
       const token = await response.json()
       this.currentToken.save(token)
+
       updated = true
     } catch (err) {
       console.log('Refresh token error: ', err)
       updated = false
     } finally {
-      console.log('refreshToken finally')
       return updated
     }
   }
@@ -126,7 +124,7 @@ class SpotifyAuth {
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
 
-    window.localStorage.setItem('code_verifier', code_verifier)
+    localStorage.setItem('code_verifier', code_verifier)
 
     const authUrl = new URL(this.authorizationEndpoint)
     const params = {

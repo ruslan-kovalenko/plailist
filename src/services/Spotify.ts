@@ -49,7 +49,7 @@ class Spotify extends SpotifyAuth implements IMusicService {
     return guessList[0].uri
   }
 
-  static async searchSongs(songs: Song[]): string[] {
+  static async searchSongs(songs: Song[]): Promise<string[]> {
     const songsPromises = songs.map((song: Song) => this.searchSong(song.song, song.artist))
     const songUris = Promise.all(songsPromises)
 
