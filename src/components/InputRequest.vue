@@ -8,7 +8,7 @@
       name="request"
       placeholder="e.g. songs to walk under the rain"
       v-model="inputRequest"
-      @keyup.enter.prevent="executeRequest"
+      @keyup.enter="executeRequest"
       :disabled="loading"
     />
     <img v-if="loading" src="@/assets/img/spinner.gif" alt="spinner" />
@@ -105,4 +105,3 @@ figure {
   }
 }
 </style>
-@/types/AiRequestCallback
