@@ -1,4 +1,4 @@
-import SpotifyAuth from '@/services/SpotifyAuth'
+import { SpotifyAuth } from '@/services/SpotifyAuth'
 import { beforeEach, vitest } from 'vitest'
 import { assert, expect, test } from 'vitest'
 import { JSDOM } from 'jsdom'
@@ -17,6 +17,7 @@ describe('Spotify Auth service', () => {
     const refreshToken = 'test-refresh-token'
 
     vi.spyOn(window, 'fetch').mockResolvedValueOnce({
+      ok: true,
       json: vi.fn().mockResolvedValueOnce({
         access_token: accessToken,
         token_type: 'bearer',
@@ -62,12 +63,13 @@ describe('Spotify Auth service', () => {
       scope: 'playlist-read-private'
     }
     const mockFetch = vi.fn().mockResolvedValueOnce({
+      ok: true,
       json: vi.fn().mockResolvedValueOnce(mockTokenResponse)
     })
     window.fetch = mockFetch
 
     const mockCurrentToken = {
-      refresh_token: currentRefreshToken,
+      refreshToken: currentRefreshToken,
       save: vi.fn()
     }
     SpotifyAuth.currentToken = mockCurrentToken
