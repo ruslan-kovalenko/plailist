@@ -4,9 +4,15 @@ import { createRouter, createWebHistory } from 'vue-router'
 import App from './App.vue'
 
 const router = createRouter({
-  mode: 'history',
   history: createWebHistory(),
-  routes: [],
+  routes: [  {
+    path: '/',
+    component: App,
+  },
+  {
+    path: '/callback',
+    component: App,
+  },],
 })
 
 createApp(App).use(router).mount('#app')

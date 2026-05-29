@@ -19,7 +19,7 @@ class Ai {
         { song: 'Starlight', artist: 'Muse' }
       ]
 
-      const messages = [
+      const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
         {
           role: 'system',
           content: `You are a helpful playlist generating assistant. 
@@ -42,19 +42,19 @@ class Ai {
 
       const response = await openai.chat.completions.create({
         messages,
-        model: 'gpt-3.5-turbo'
+        model: 'gpt-5.4-nano'
       })
       const choices = response.choices
 
-      if (!choices.length) return []
+      if (!choices.length || !choices[0].message.content) return []
 
       songsJson = JSON.parse(choices[0].message.content)
       return songsJson
     } catch (err) {
       console.error('Error parsing OpenAI response: ', err)
-    } finally {
-      return songsJson
     }
+    
+    return songsJson
   }
 }
 

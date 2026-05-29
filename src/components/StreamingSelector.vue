@@ -1,24 +1,37 @@
 <template>
   <div class="container">
-    <h6>Choose your streaming service to log in</h6>
-    <div class="service-block" @click="spotifyLogin()">
+    <h6>Choose your streaming service</h6>
+    <div class="service-block" @click="login(ServiceType.Spotify)">
       <img src="@/assets/img/spotify.jpg" alt="spotify" />
       <span> Spotify </span>
+    </div>
+    <div class="service-block" @click="login(ServiceType.Youtube)">
+      <img src="@/assets/img/youtube.png" alt="youtube" />
+      <span> Youtube Music </span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import Spotify from '@/services/Spotify'
+import { type PropType } from 'vue'
+import { getAuthService } from '@/services/authRegistry'
 import { ServiceType } from '@/types/ServiceType'
-import SpotifyAuth from '@/services/SpotifyAuth'
-import Facade from '@/services/Facade'
+import type { SetServiceCallback } from '@/types/AiRequestCallback'
 
-const spotifyLogin = async () => {
-  await SpotifyAuth.loginWithSpotifyClick()
-  Facade.musicService = Spotify
+const props = defineProps({
+  streamingServiceCallback: {
+    type: Function as PropType<SetServiceCallback>,
+    required: true
+  }
+})
+
+const login = async (serviceType: ServiceType): Promise<void> => {
+  const service = getAuthService(serviceType)
+  const isLoggedIn = await service.initClient()
+
+  if (!isLoggedIn) return
+
+  await props.streamingServiceCallback(serviceType)
 }
 </script>
 
@@ -29,8 +42,9 @@ const spotifyLogin = async () => {
   left: 50%;
   opacity: 0.9;
   background: #fff;
+  color: #000;
   width: 45vw;
-  border-radius: 5px;
+  border-radius: 12px;
   transform: translate(-50%, -50%);
   padding: 1rem 2rem 2rem;
 }
@@ -71,5 +85,6 @@ h6 {
   text-align: center;
   margin-bottom: 3rem;
   font-size: 1.9rem;
+  font-weight: 600;
 }
 </style>

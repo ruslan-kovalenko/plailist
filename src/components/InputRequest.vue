@@ -20,13 +20,12 @@
 </template>
 
 <script setup lang="ts">
-import AiRequestCallback from '@/types/AiRequestCallback'
-import { ref, watch } from 'vue'
+import type { AiRequestCallback } from '@/types/AiRequestCallback'
+import { ref, type PropType } from 'vue'
 
 const inputRequest = ref('')
 const loading = ref(false)
-const requestResult = ref(false)
-const successMessage = ref(null)
+const successMessage = ref()
 
 const props = defineProps({
   callback: {

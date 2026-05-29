@@ -1,4 +1,4 @@
-import SpotifyAuth from '@/services/SpotifyAuth'
+import { SpotifyAuth } from '@/services/SpotifyAuth'
 import { beforeEach, vitest } from 'vitest'
 import { assert, expect, test } from 'vitest'
 import { JSDOM } from 'jsdom'
@@ -7,13 +7,19 @@ import Spotify from '@/services/Spotify'
 describe('Spotify service', () => {
   beforeEach(() => {
     const mockCurrentToken = {
-      access_token: 'access token'
+      accessToken: 'access token',
+      save: vi.fn()
     }
     SpotifyAuth.currentToken = mockCurrentToken
+    vi.spyOn(SpotifyAuth, 'init').mockImplementation(async () => {
+      SpotifyAuth.currentToken = mockCurrentToken
+      return null
+    })
   })
 
   it('should create playlist', async () => {
     global.fetch = vi.fn().mockResolvedValueOnce({
+      ok: true,
       json: vi.fn().mockResolvedValueOnce({ id: 'mock-playlist-id' })
     })
 
@@ -25,7 +31,10 @@ describe('Spotify service', () => {
       {
         method: 'POST',
         body: JSON.stringify({ name: playlistName }),
-        headers: { Authorization: 'Bearer access token' }
+        headers: {
+          Authorization: 'Bearer access token',
+          'Content-Type': 'application/json'
+        }
       }
     )
 
@@ -34,6 +43,7 @@ describe('Spotify service', () => {
 
   it('should add songs to playlist', async () => {
     vi.spyOn(window, 'fetch').mockResolvedValueOnce({
+      ok: true,
       json: vi.fn().mockResolvedValueOnce(['1', '2', '3', '4', '5'])
     })
 
@@ -44,11 +54,12 @@ describe('Spotify service', () => {
     expect(window.fetch).toHaveBeenCalledWith(
       `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
       expect.objectContaining({
-        method: 'Post',
-        headers: { Authorization: 'Bearer access token' },
-        body: JSON.stringify({
-          uris: uris
-        })
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer access token',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ uris })
       })
     )
 
@@ -57,6 +68,7 @@ describe('Spotify service', () => {
 
   it('should search song', async () => {
     global.fetch = vi.fn().mockResolvedValueOnce({
+      ok: true,
       json: vi.fn().mockResolvedValueOnce({
         tracks: {
           items: [
@@ -84,10 +96,16 @@ describe('Spotify service', () => {
     const testArtist = 'test artist'
     const uri = await Spotify.searchSong(testSong, testArtist)
 
+    const searchParams = new URLSearchParams({
+      q: `${testSong} ${testArtist}`,
+      type: 'track',
+      limit: '5'
+    })
+
     expect(window.fetch).toHaveBeenCalledWith(
-      `https://api.spotify.com/v1/search?q=${testSong} ${testArtist}&type=track&limit=5`,
+      `https://api.spotify.com/v1/search?${searchParams.toString()}`,
       expect.objectContaining({
-        method: 'Get',
+        method: 'GET',
         headers: { Authorization: 'Bearer access token' }
       })
     )

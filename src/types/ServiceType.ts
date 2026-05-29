@@ -1,3 +1,4 @@
 export enum ServiceType {
-  Spotify
+  Spotify,
+  Youtube
 }

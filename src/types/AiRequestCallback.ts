@@ -1,5 +1,5 @@
-import IMusicService from '@/services/IMusicService'
+import type { ServiceType } from '@/types/ServiceType'
 
-export default interface AiRequestCallback {
-  (input: string, service: IMusicService): boolean
-}
+export type AiRequestCallback = (input: string) => Promise<boolean>
+
+export type SetServiceCallback = (service: ServiceType) => Promise<void>

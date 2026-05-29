@@ -1,29 +1,38 @@
 <template>
   <main>
-    <StreamingSelector v-if="streamingService == null" />
-    <InputRequest :callback="aiRequestCallback" v-else />
+    <StreamingSelector v-if="!isInitialized" :streamingServiceCallback="setStreamingServiceCallback" />
+    <InputRequest v-else :callback="aiRequestCallback" />
   </main>
 </template>
 
 <script setup lang="ts">
 import InputRequest from './components/InputRequest.vue'
 import StreamingSelector from './components/StreamingSelector.vue'
+import { ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import PlaylistFacade from './services/PlaylistFacade'
 import { ServiceType } from '@/types/ServiceType'
-import { ref, watch, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import Facade from './services/Facade'
-import Spotify from './services/Spotify'
-import SpotifyAuth from './services/SpotifyAuth'
 
-const streamingService = ref(null)
+const isInitialized = ref<boolean>(false)
+const route = useRoute()
 
-const aiRequestCallback = async (input: string): boolean => {
-  return Facade.createPlaylist(input)
+watch(
+  () => route.path,
+  async (path) => {
+    if (path !== '/callback') return
+
+    isInitialized.value = await PlaylistFacade.useService(ServiceType.Spotify)
+  },
+  { immediate: false }
+)
+
+const aiRequestCallback = async (input: string): Promise<boolean> => {
+  return PlaylistFacade.createPlaylist(input)
 }
 
-onMounted(async () => {
-  streamingService.value = await Facade.initMusicServiceInstance()
-})
+const setStreamingServiceCallback = async (service: ServiceType): Promise<void> => {
+  isInitialized.value = await PlaylistFacade.useService(service)
+}
 </script>
 
 <style scoped>
