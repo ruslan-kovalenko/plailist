@@ -1,5 +1,3 @@
-# plailist
-
 ## Project Setup
 
 ```sh
